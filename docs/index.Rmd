@@ -1,33 +1,85 @@
 ---
-title: "test"
+title: "Stats Tutorials"
 author: "Albert Yeh"
 date: "12/17/2023"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```
 
-## R Markdown
+```{r libraries, include = FALSE}
+#install.packages("pwr")
+#install.packages("tidyr")
+#install.packages("ggplot2")
+```
+## Power Analyses
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Power analysis is a critical part of experimental design with the primary purpose of estimating the sample size required to detect an effect of a given size with a given degree of confidence. In other words, it is the probability of detecting an effect, given that the effect is really there. 
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Why is it important?  First, a power analysis is a good way of making sure that you have thought through every aspect of the study and the statistical analysis before you start collecting data. This is critical in designing clinical experiments and also in data analyses where you want to gauge if you have enough sample size to conduct a meaningful analysis. There are other uses as well, if say you. have only a fixed number of samples available and want to determine what type of effect size you can hope to detect.
 
-```{r cars}
-summary(cars)
+### Considerations
+To perform a power analysis, you need three of the four variables (you can determine the last variable if given the first 3):
+
+1. **Sample size**
+2. **Effect size** =  This represents the magnitude of an experimental outcome. There are different types depending on the statistical test being used.  Most common is "Cohen's d" for t-tests. otherise include "f" for ANOVA, "r" for correlations, and "w" for chi-squared tests. Generally, an effect size of 0.10 is considered small, 0.20-0.30 is medium, and >0.50 is relatively large
+3. **Significance level** = P(Type I error) = probability of finding an effect that is not there
+4. **Power** = 1 - P(Type II error) = probability of finding an effect that is there
+
+Note that if you change the statistical procedure used to analyze the data, you will most likely have to redo the power analysis, as the procedure is different for t-tests vs. chi-squared vs. regression etc...
+
+### Implementation
+We can compute a power analysis using functions from the `pwr` package. The `tidyr` and `dplyr` package will be used to help generate / manipulate data points and `ggplot2` will be used for plotting data.
+```{r library load, echo=TRUE, results='hide'}
+library(pwr)
+library(tidyr)
+library(ggplot2)
+library(dplyr)
 ```
 
-## Including Plots
+## Visualizing a Basic Power Analysis for T-tests
+Code suggested by "https://statsthinking21.github.io/statsthinking21-R-site/statistical-power-in-r.html"
 
-You can also embed plots, for example:
+For the tutorial below, we will perform power analyses for a range of inputs for a simple t-test.  We will vary the effect sizes (0.2, 0.5, 0.8) and the sample sizes (up to 500) to see what the power calculation holds.  We will use the default significant level of 0.05.
+```{r data, echo=TRUE, results='markup'}
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+# Specify the data
+effect_sizes <- c(0.2, 0.5, 0.8) 
+sample_sizes = seq(10, 500, 10)
+
+# Create a data frame using the crossing() function which basically creates a grid/matrix including all possible combinations of values
+input_df <- crossing(effect_sizes,sample_sizes)
+
+# glimpse() is from the `dplyr` package and is a transponsed version of the function print()
+glimpse(input_df) 
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r function, echo=TRUE, results='markup'}
+# Create a function get the power value and return as a tibble
+get_power <- function(df){
+  power_result <- pwr.t.test(n=df$sample_sizes, 
+                             d=df$effect_sizes,
+                             sig.level=0.05,
+                             type='two.sample')
+  df$power=power_result$power
+  return(df)
+}
 
-1+1
+# Run get_power for each combination of effect size and sample size
+power_curves <- input_df %>%
+  do(get_power(.)) %>%
+  mutate(effect_sizes = as.factor(effect_sizes)) 
+```
 
+Now we can plot the power curves, using a separate line for each effect size. Note we draw a horizontal reference line at power = 0.8 as this is a commonly used reference point.
+```{r plot power output, echo=TRUE, results='markup'}
+ggplot(power_curves, 
+       aes(x=sample_sizes,
+           y=power, 
+           linetype=effect_sizes)) + 
+  geom_line() + 
+  geom_hline(yintercept = 0.8, 
+             linetype='dotdash') + theme_bw()
+```
