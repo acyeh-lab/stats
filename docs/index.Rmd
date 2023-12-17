@@ -3,6 +3,7 @@ title: "Stats Tutorials"
 author: "Albert Yeh"
 date: "12/17/2023"
 output: html_document
+runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
@@ -39,7 +40,7 @@ library(ggplot2)
 library(dplyr)
 ```
 
-## Visualizing a Basic Power Analysis for T-tests
+## Part 1: Visualizing a Basic Power Analysis for T-tests
 For the tutorial below, we will answer the following question: 
 
 **How many patients would I need to detect a difference between the effects of drug "A" and drug "B" on diastolic blood pressure?**
@@ -48,7 +49,7 @@ To do this, we will perform power analyses for a range of inputs assuming our an
 
 For t-tests, the effect size used is referred to as "Cohen's d" - this is calculated by taking the difference between the means of the two populations divided by the standard deviation (SD). Note that this implies that you do need to have some prior knowledge of how large you expect the difference between the two means to be, so it is helpful to have a range of inputs. In this case, it would involve knowing roughly the SD for diastolic blood pressure in the population being studied as well as an estimated difference in blood pressure for those on drug "A" and those on drug "B". 
 
-*Often times, you need some pilot data to get a rough estimate of these numbers.  Otherwise, you would just have to make your best educated guess based on available information.* Note that you don't necessarily need to know the actual SD of diastolic blood pressure (which happens to be ~10-12 mmHg), but rather, the ratio of the difference between the two expected means to the SD (fraction of SD). Thus, a "Cohen's d" of 0.8 signifies that the mean difference is nearly 1 SD apart. In a real-world-setting, you want once to test a range of "Cohen's d", as is done here.
+*Often times, you need some pilot data to get a rough estimate of these numbers.  Otherwise, you would just have to make your best educated guess based on available information.* Note that you don't necessarily need to know the actual SD of diastolic blood pressure (which happens to be ~10-12 mmHg), but rather, the ratio of the difference between the two expected means to the SD (fraction of SD). Thus, a "Cohen's d" of 0.8 signifies that the mean difference is nearly 1 SD apart. In a real-world-setting, you want to test a range of "Cohen's d", as is done here.
 
 ```{r data, echo=TRUE, results='markup'}
 # Note this code snippet was adapted from "https://statsthinking21.github.io/statsthinking21-R-site/statistical-power-in-r.html"
@@ -92,3 +93,46 @@ ggplot(power_curves,
 ```
 
 As we can see from the graph above, the sample size needed to achieve a power of 0.8 is much higher when the effect size is small (0.2) compared to when the effect size is large (0.8) (N~400 vs. N~20). In this case, "Cohen's d" is being used as a measure of effect size (remember, it is defined as delta means / standard deviation) - basically, the difference between the two expected means as a percentage of the standard deviation. So an effect size of 0.8 suggests that we expect the difference in effect between the two drugs on diastolic blood pressure to be nearly the same as one standard deviation in blood pressure for the overall population, which is a pretty large assumption!
+
+
+## Part 2: An Interactive Follow-up
+
+We will take a look at this again using an interactive approach, where you can vary the effect size "Cohen's d". For this tutorial, we will enable 2 simultaneous inputs so we can compare two scenarios.
+
+```{r echo = FALSE}
+sliderInput("cohens_d",
+  label = "Plot 1: Cohen's d (effect size):",
+  min = 0,
+  max = 2,
+  value = 0.2,
+  step = 0.05)
+
+sliderInput("cohens_d2",
+  label = "Plot 2: Cohen's d:",
+  min = 0,
+  max = 2,
+  value = 0.8,
+  step = 0.05)
+```
+
+And power caculation
+```{r echo = FALSE}
+renderPlot({
+  effect_sizes <- c(input$cohens_d, input$cohens_d2) 
+  sample_sizes = seq(10, 500, 10)
+  input_df <- crossing(effect_sizes,sample_sizes)
+  power_curves <- input_df %>%
+    do(get_power(.)) %>%
+    mutate(effect_sizes = as.factor(effect_sizes)) 
+  
+  ggplot(power_curves, 
+       aes(x=sample_sizes,
+           y=power, 
+           linetype=effect_sizes)) + 
+  geom_line() + 
+  geom_hline(yintercept = 0.8, 
+             linetype='dotdash') + theme_bw()
+})
+```
+
+
