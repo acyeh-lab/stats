@@ -3,6 +3,7 @@ title: "Stats Tutorials"
 author: "Albert Yeh"
 date: "12/17/2023"
 output: html_document
+runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
@@ -96,4 +97,40 @@ As we can see from the graph above, the sample size needed to achieve a power of
 
 ## Part 2: An Interactive Follow-up
 
-Please visit this site for an interactive version: https://acyeh-lab.shinyapps.io/docs/
+We will take a look at this again using an interactive approach, where you can vary the effect size "Cohen's d". For this tutorial, we will enable 2 simultaneous inputs so we can compare two scenarios.
+```{r echo = FALSE}
+sliderInput("cohens_d",
+  label = "Plot 1: Cohen's d (effect size):",
+  min = 0,
+  max = 2,
+  value = 0.2,
+  step = 0.05)
+
+sliderInput("cohens_d2",
+  label = "Plot 2: Cohen's d:",
+  min = 0,
+  max = 2,
+  value = 0.8,
+  step = 0.05)
+```
+
+```{r echo = FALSE}
+renderPlot({
+  effect_sizes <- c(input$cohens_d, input$cohens_d2) 
+  sample_sizes = seq(10, 500, 10)
+  input_df <- crossing(effect_sizes,sample_sizes)
+  power_curves <- input_df %>%
+    do(get_power(.)) %>%
+    mutate(effect_sizes = as.factor(effect_sizes)) 
+  
+  ggplot(power_curves, 
+       aes(x=sample_sizes,
+           y=power, 
+           linetype=effect_sizes)) + 
+  geom_line() + 
+  geom_hline(yintercept = 0.8, 
+             linetype='dotdash') + theme_bw()
+})
+```
+
+
