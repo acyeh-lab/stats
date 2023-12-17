@@ -25,8 +25,8 @@ To perform a power analysis, you need three of the four variables (you can deter
 
 1. **Sample size**
 2. **Effect size** =  This represents the magnitude of an experimental outcome. There are different types depending on the statistical test being used.  Most common is "Cohen's d" for t-tests. otherise include "f" for ANOVA, "r" for correlations, and "w" for chi-squared tests. Generally, an effect size of 0.10 is considered small, 0.20-0.30 is medium, and >0.50 is relatively large. Note that there are dozens different measures of effect sizes. Many effect sizes of different types can be converted to other types, as many estimate the separation of two distributions, so are mathematically related. For example, a correlation coefficient can be converted to a Cohen's d and vice versa.
-3. **Significance level** = P(Type I error) = probability of finding an effect that is not there
-4. **Power** = 1 - P(Type II error) = probability of finding an effect that is there
+3. **Significance level** = P(Type I error) = probability of finding an effect that is not there. A standard benchmark is to use "0.05".
+4. **Power** = 1 - P(Type II error) = probability of finding an effect that is there. A standard benchmark is to use "0.80".
 
 Note that if you change the statistical procedure used to analyze the data, you will most likely have to redo the power analysis, as the procedure is different for t-tests vs. chi-squared vs. regression etc...
 
@@ -40,13 +40,18 @@ library(dplyr)
 ```
 
 ## Visualizing a Basic Power Analysis for T-tests
-Code suggested by "https://statsthinking21.github.io/statsthinking21-R-site/statistical-power-in-r.html"
+For the tutorial below, we will answer the following question: 
 
-For the tutorial below, we will perform power analyses for a range of inputs for a simple t-test.  We will vary the effect sizes (0.2, 0.5, 0.8) and the sample sizes (up to 500) to see what the power calculation holds.  We will use the default significant level of 0.05.
+**How many patients would I need to detect a difference between the effects of drug "A" and drug "B" on diastolic blood pressure?**
 
-For t-tests, the effect size used is referred to as "Cohen's d" - this is calculated by taking the difference between the means of the two populations divided by the standard deviation.
+To do this, we will perform power analyses for a range of inputs assuming our analysis will be conduct with a simple t-test (with all of its assumptions).  We will vary the effect sizes (0.2, 0.5, 0.8) and the sample sizes (up to 500) to see what the power calculation holds.  We will use the default significance level of 0.05.
+
+For t-tests, the effect size used is referred to as "Cohen's d" - this is calculated by taking the difference between the means of the two populations divided by the standard deviation (SD). Note that this implies that you do need to have some prior knowledge of how large you expect the difference between the two means to be, so it is helpful to have a range of inputs. In this case, it would involve knowing roughly the SD for diastolic blood pressure in the population being studied as well as an estimated difference in blood pressure for those on drug "A" and those on drug "B". 
+
+*Often times, you need some pilot data to get a rough estimate of these numbers.  Otherwise, you would just have to make your best educated guess based on available information.* Note that you don't necessarily need to know the actual SD of diastolic blood pressure (which happens to be ~10-12 mmHg), but rather, the ratio of the difference between the two expected means to the SD (fraction of SD). Thus, a "Cohen's d" of 0.8 signifies that the mean difference is nearly 1 SD apart. In a real-world-setting, you want once to test a range of "Cohen's d", as is done here.
+
 ```{r data, echo=TRUE, results='markup'}
-
+# Note this code snippet was adapted from  "https://statsthinking21.github.io/statsthinking21-R-site/statistical-power-in-r.html"
 # Specify the data
 effect_sizes <- c(0.2, 0.5, 0.8) 
 sample_sizes = seq(10, 500, 10)
@@ -86,4 +91,4 @@ ggplot(power_curves,
              linetype='dotdash') + theme_bw()
 ```
 
-As we can see from the graph above, the sample size needed to achieve a power of 0.8 is much higher when the effect size is small (0.2) compared to when the effect size is large (0.8). In this case, "Cohen's d" is being used as a measure of effect size (delta mean / standard deviation) - basically, the difference between the two expected means as a percentage of the standard deviation. So an effect size of 0.8 suggests that we expect the difference between the two means to be nearly the same as an entire standard deviation of the overall population, which is pretty large!
+As we can see from the graph above, the sample size needed to achieve a power of 0.8 is much higher when the effect size is small (0.2) compared to when the effect size is large (0.8) (N~400 vs. N~20). In this case, "Cohen's d" is being used as a measure of effect size (remember, it is defined as delta means / standard deviation) - basically, the difference between the two expected means as a percentage of the standard deviation. So an effect size of 0.8 suggests that we expect the difference in effect between the two drugs on diastolic blood pressure to be nearly the same as one standard deviation in blood pressure for the overall population, which is a pretty large assumption!
