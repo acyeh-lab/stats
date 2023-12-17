@@ -98,7 +98,6 @@ As we can see from the graph above, the sample size needed to achieve a power of
 ## Part 2: An Interactive Follow-up
 
 We will take a look at this again using an interactive approach, where you can vary the effect size "Cohen's d". For this tutorial, we will enable 2 simultaneous inputs so we can compare two scenarios.
-
 ```{r echo = FALSE}
 sliderInput("cohens_d",
   label = "Plot 1: Cohen's d (effect size):",
@@ -115,7 +114,6 @@ sliderInput("cohens_d2",
   step = 0.05)
 ```
 
-And power caculation
 ```{r echo = FALSE}
 renderPlot({
   effect_sizes <- c(input$cohens_d, input$cohens_d2) 

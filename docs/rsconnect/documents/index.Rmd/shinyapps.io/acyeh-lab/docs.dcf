@@ -1,0 +1,12 @@
+name: docs
+title: docs
+username: acyeh-lab
+account: acyeh-lab
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 10816331
+bundleId: 8059348
+url: https://acyeh-lab.shinyapps.io/docs/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
