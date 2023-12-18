@@ -220,7 +220,7 @@ In the above situation, "N"=87, suggesting that we need at least 87 samples to o
 
 
 ### Logistic Regression 
-Unlike a linear regression where the outcome is continuous (e.g. diastolic blood pressure change), a logistic regression is used to predict a binary outcome (e.g. improvement or no improvement), based on prior observations of a data set.
+Unlike a linear regression where the outcome is continuous (e.g. blood pressure change), a logistic regression is used to predict a binary outcome (e.g. occurrence of a heart attack), based on prior observations of a data set.
 
 Unlike the other tests mentioned before, there is not one "effect size" statistic for logistic regression, but power calculation can still be performed if we can estimate the following two statistics instead:
 
