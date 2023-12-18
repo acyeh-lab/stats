@@ -21,7 +21,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ## Power Analyses
 Power analysis is a critical part of experimental design with the primary purpose of estimating the sample size required to detect an effect of a given size with a given degree of confidence. In other words, it is the probability of detecting an effect, given that the effect is really there. 
 
-Why is it important?  First, a power analysis is a good way of making sure that you have thought through every aspect of the study and the statistical analysis before you start collecting data. This is critical in designing clinical experiments and also in data analyses where you want to gauge if you have enough sample size to conduct a meaningful analysis. There are other uses as well, if say you have only a fixed number of samples available and want to determine what type of effect size you can hope to detect.
+Why is it important?  First, a power analysis is a good way of making sure that you have thought through every aspect of the study and the statistical analysis before you start collecting data. This is critical in designing clinical experiments and also in data analyses where you want to gauge if you have enough sample size to conduct a meaningful analysis. There are other uses as well, if say you have only a fixed number of samples available and want to determine what type of effect size you can hope to detect. Second, for any reasonable grant or study proposal, it is absolutely expected that you have thought through this.
 
 ### Considerations
 To perform most basic power analyses, you need three of the four variables (you can determine the last variable if given the other 3):
@@ -69,7 +69,7 @@ sample_sizes = seq(10, 500, 10)
 # Create a data frame using the crossing() function which basically creates a grid/matrix including all possible combinations of values
 input_df <- crossing(effect_sizes,sample_sizes)
 
-# glimpse() is from the `dplyr` package and is a transponsed version of the function print()
+# glimpse() is from the `dplyr` package and is a transposed version of the function print()
 glimpse(input_df) 
 ```
 
@@ -141,7 +141,7 @@ survival <- c("powerSurvEpi","ssizeCT.default(power = , k = , pE = , pC = , RR =
 
 
 df<-data.frame(rbind(t_test,prop_test,chi_sq,ANOVA,pearson,linear_reg,logit_reg,survival))
-colnames(df) <- c("R package", "R function using 'pwr' package")
+colnames(df) <- c("R package", "Function using corresponding R package")
 row.names(df) <- c("T-test", "Test of proportion","Chi-squared test (X^2)","Analysis of variance (ANOVA)", "Pearson's correlation", "Linear regression", "Logistic regression","Survival analysis")
 
 df %>%

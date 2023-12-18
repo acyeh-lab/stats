@@ -597,7 +597,9 @@ in designing clinical experiments and also in data analyses where you
 want to gauge if you have enough sample size to conduct a meaningful
 analysis. There are other uses as well, if say you have only a fixed
 number of samples available and want to determine what type of effect
-size you can hope to detect.</p>
+size you can hope to detect. Second, for any reasonable grant or study
+proposal, it is absolutely expected that you have thought through
+this.</p>
 <div id="considerations" class="section level3">
 <h3>Considerations</h3>
 <p>To perform most basic power analyses, you need three of the four
@@ -687,7 +689,7 @@ sample_sizes = seq(10, 500, 10)
 # Create a data frame using the crossing() function which basically creates a grid/matrix including all possible combinations of values
 input_df &lt;- crossing(effect_sizes,sample_sizes)
 
-# glimpse() is from the `dplyr` package and is a transponsed version of the function print()
+# glimpse() is from the `dplyr` package and is a transposed version of the function print()
 glimpse(input_df) </code></pre>
 <pre><code>## Rows: 150
 ## Columns: 2
@@ -890,7 +892,7 @@ themselves.
 R package
 </th>
 <th style="text-align:left;">
-R function using ‘pwr’ package
+Function using corresponding R package
 </th>
 </tr>
 </thead>
