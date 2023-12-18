@@ -1109,13 +1109,14 @@ samples to observe the desired effect size for a 2x2 table.</p>
 </div>
 <div id="logistic-regression" class="section level3">
 <h3>Logistic Regression</h3>
-<p>Unlike a linear regression where the outcome is continuous
-(e.g. blood pressure change), a logistic regression is used to predict a
-binary outcome (e.g. occurrence of a heart attack), based on prior
-observations of a data set.</p>
-<p>Unlike the other tests mentioned before, there is not one “effect
-size” statistic for logistic regression, but power calculation can still
-be performed if we can estimate the following two statistics
+<p>While a linear regression models continuous outcomes (e.g. blood
+pressure change), a logistic regression is used to predict a binary
+outcome (e.g. occurrence of a heart attack), based on prior observations
+of a data set.</p>
+<p>We will use the <code>WebPower</code> package to perform our
+analysis. Unlike the other tests mentioned before, there is not one
+“effect size” statistic for logistic regression, but power calculation
+can still be performed if we can estimate the following two statistics
 instead:</p>
 <ol style="list-style-type: decimal">
 <li><p>p0 Prob(Y=1|X=0): the probability of observing 1 for the outcome
