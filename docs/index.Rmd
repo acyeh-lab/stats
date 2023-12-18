@@ -15,6 +15,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 #install.packages("ggplot2")
 #install.packages("kableExtra")
 #install.packages("WebPower")
+#install.packages("powerSurvEpi")
 ```
 ## Power Analyses
 
@@ -39,11 +40,13 @@ Make sure to install the necessary packages first, e.g. `install.packages("pwr")
 
 ```{r library load, echo=TRUE, results='hide'}
 library(pwr) # Basic power analysis package
-library(WebPower) # Advanced power analysis package
+library(WebPower) # Advanced power analysis package - useful for logistic regression
+library(powerSurvEpi) # Power analysis package for survival data
 library(tidyr) # For data manipulation
 library(dplyr) # For data manipulation
 library(kableExtra) # For displaying data
 library(ggplot2) # For plotting data
+
 ```
 
 ## Part 1: Visualizing a Basic Power Analysis for T-tests
@@ -125,19 +128,21 @@ df %>%
 ```
 
 ### Modeling in R
-Common functions included in the package for power calculations are shown below:
+Common functions included in the package for power calculations are shown below. For more advanced options, please check out the packages themselves.
 ```{r power analyses commands, echo=FALSE, results='markup'}
-t_test <- c("pwr","pwr.t2n.test(n1 = , n2= , d = , sig.level =, power = )")
+t_test <- c("pwr","pwr.t2n.test(n1 = , n2 = , d = , sig.level = , power = )")
 prop_test <- c("pwr","pwr.2p2n.test(h = , n1 = , n2 = , sig.level = , power = )")
-chi_sq <- c("pwr","pwr.chisq.test(w =, N = , df = , sig.level =, power = )")
+chi_sq <- c("pwr","pwr.chisq.test(w = , N = , df = , sig.level = , power = )")
 ANOVA <- c("pwr","pwr.anova.test(k = , n = , f = , sig.level = , power = )")
 pearson <- c("pwr","pwr.r.test(n = , r = , sig.level = , power = )")
-linear_reg <- c("pwr","pwr.f2.test(u =, v = , f2 = , sig.level = , power = )")
+linear_reg <- c("pwr","pwr.f2.test(u = , v = , f2 = , sig.level = , power = )")
 logit_reg <- c("WebPower","wp.logistic(n = , p0 = , p1 = , alpha = , power = )")
+survival <- c("powerSurvEpi","ssizeCT.default(power = , k = , pE = , pC = , RR = , alpha = )")
 
-df<-data.frame(rbind(t_test,prop_test,chi_sq,ANOVA,pearson,linear_reg,logit_reg))
+
+df<-data.frame(rbind(t_test,prop_test,chi_sq,ANOVA,pearson,linear_reg,logit_reg,survival))
 colnames(df) <- c("R package", "R function using 'pwr' package")
-row.names(df) <- c("T-test", "Test of proportion","Chi-squared test (X^2)","Analysis of variance (ANOVA)", "Pearson's correlation", "Linear regression", "Logistic regression")
+row.names(df) <- c("T-test", "Test of proportion","Chi-squared test (X^2)","Analysis of variance (ANOVA)", "Pearson's correlation", "Linear regression", "Logistic regression","Survival analysis")
 
 df %>%
   kbl() %>%
@@ -210,10 +215,10 @@ Now, let's say we are trying to find how many samples we should have if we have 
 ```{r, echo=TRUE, results='markup'}
 # example: w=0.3 n=Unknown observations, df=1, sig.level = .05, power=0.80
 pwr.chisq.test(w=0.3,
-            N=NULL,
-            df=1,
-            sig.level = 0.05,
-            power = 0.80)
+               N=NULL,
+               df=1,
+               sig.level = 0.05,
+               power = 0.80)
 
 ```
 In the above situation, "N"=87, suggesting that we need at least 87 samples to observe the desired effect size for a 2x2 table.
@@ -251,5 +256,53 @@ wp.logistic(n = NULL,
             family="Bernoulli")
 ```
 We see that using p0=0.30 and p1=0.50, we get an "N"=192, suggesting we should have at least 192 observations.
+
+### Survival Analysis
+Here, we will perform a power calculation comparing survival curves between two groups under the Cox Proportional-Hazards Model for clinical trials (can read more elsewhere).  In brief, survival models relate the time that passes, before some event occurs, to one or more covariates that may be associated with that quantity of time. In a proportional hazards model, we assume that th effect of a unit increase in a covariate is multiplicative with respect to the hazard rate. For example, taking a drug may halve one's hazard rate for a stroke occurring.
+
+Of note, in the `powerSurvEpi` package, unlike the other functions that we have studied where you would leave one variable blank, there are separate functions for separate calculations (i.e. for sample size, for power).
+
+For our power calculations, we use the following variables:
+
+1. nE: number of participants in the experimental group.
+2. nC: number of participants in the control group.
+3. k: ratio between the number of participants in the control and experimental group
+4. pE: probability of failure in group E (experimental group) over the maximum time period of the study (t years).
+5. pC: probability of failure in group C (control group) over the maximum time period of the study (t years).
+6. RR: postulated hazard ratio (HR < 1 signifies a lower hazard and potential benefit).
+7. alpha: type I error rate
+
+#### Finding the Sample Size
+```{r, echo=TRUE, results='markup'}
+# example: unknown (output) = sample size (nE and nC); 
+# ssizeCT.default(power = , k = , pE = , pC = , RR = , alpha = )
+ssizeCT.default(power = 0.8,
+                k = 1,
+                pE = 0.5,
+                pC = 0.8,
+                RR = 0.7,
+                alpha = 0.05)
+```
+
+
+#### Finding the Power
+
+```{r, echo=TRUE, results='markup'}
+# example: unknown (output) = power; 
+# powerCT.default(nE = , nC = , pE = , pC = , RR = , alpha = )
+powerCT.default(nE = 200,
+                nC = 200,
+                pE = 0.3707,
+                pC = 0.4890,
+                RR = 0.7,
+                alpha = 0.05)
+
+```
+
+
+
+
+              
+             
 
 

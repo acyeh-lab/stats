@@ -639,7 +639,8 @@ cover all of the contingencies.</p>
 <p>Make sure to install the necessary packages first,
 e.g. <code>install.packages(&quot;pwr&quot;)</code></p>
 <pre class="r"><code>library(pwr) # Basic power analysis package
-library(WebPower) # Advanced power analysis package
+library(WebPower) # Advanced power analysis package - useful for logistic regression
+library(powerSurvEpi) # Power analysis package for survival data
 library(tidyr) # For data manipulation
 library(dplyr) # For data manipulation
 library(kableExtra) # For displaying data
@@ -872,7 +873,8 @@ F^2
 <div id="modeling-in-r" class="section level3">
 <h3>Modeling in R</h3>
 Common functions included in the package for power calculations are
-shown below:
+shown below. For more advanced options, please check out the packages
+themselves.
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -895,7 +897,7 @@ T-test
 pwr
 </td>
 <td style="text-align:left;">
-pwr.t2n.test(n1 = , n2= , d = , sig.level =, power = )
+pwr.t2n.test(n1 = , n2 = , d = , sig.level = , power = )
 </td>
 </tr>
 <tr>
@@ -917,7 +919,7 @@ Chi-squared test (X^2)
 pwr
 </td>
 <td style="text-align:left;">
-pwr.chisq.test(w =, N = , df = , sig.level =, power = )
+pwr.chisq.test(w = , N = , df = , sig.level = , power = )
 </td>
 </tr>
 <tr>
@@ -950,7 +952,7 @@ Linear regression
 pwr
 </td>
 <td style="text-align:left;">
-pwr.f2.test(u =, v = , f2 = , sig.level = , power = )
+pwr.f2.test(u = , v = , f2 = , sig.level = , power = )
 </td>
 </tr>
 <tr>
@@ -962,6 +964,17 @@ WebPower
 </td>
 <td style="text-align:left;">
 wp.logistic(n = , p0 = , p1 = , alpha = , power = )
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Survival analysis
+</td>
+<td style="text-align:left;">
+powerSurvEpi
+</td>
+<td style="text-align:left;">
+ssizeCT.default(power = , k = , pE = , pC = , RR = , alpha = )
 </td>
 </tr>
 </tbody>
@@ -1073,10 +1086,10 @@ df=(r-1)(c-1). So for a 2x2 contingency table, the degrees of freedom is
 1.</p>
 <pre class="r"><code># example: w=0.3 n=Unknown observations, df=1, sig.level = .05, power=0.80
 pwr.chisq.test(w=0.3,
-            N=NULL,
-            df=1,
-            sig.level = 0.05,
-            power = 0.80)</code></pre>
+               N=NULL,
+               df=1,
+               sig.level = 0.05,
+               power = 0.80)</code></pre>
 <pre><code>## 
 ##      Chi squared power calculation 
 ## 
@@ -1148,6 +1161,61 @@ wp.logistic(n = NULL,
 ## URL: http://psychstat.org/logistic</code></pre>
 <p>We see that using p0=0.30 and p1=0.50, we get an “N”=192, suggesting
 we should have at least 192 observations.</p>
+</div>
+<div id="survival-analysis" class="section level3">
+<h3>Survival Analysis</h3>
+<p>Here, we will perform a power calculation comparing survival curves
+between two groups under the Cox Proportional-Hazards Model for clinical
+trials (can read more elsewhere). In brief, survival models relate the
+time that passes, before some event occurs, to one or more covariates
+that may be associated with that quantity of time. In a proportional
+hazards model, we assume that th effect of a unit increase in a
+covariate is multiplicative with respect to the hazard rate. For
+example, taking a drug may halve one’s hazard rate for a stroke
+occurring.</p>
+<p>Of note, in the <code>powerSurvEpi</code> package, unlike the other
+functions that we have studied where you would leave one variable blank,
+there are separate functions for separate calculations (i.e. for sample
+size, for power).</p>
+<p>For our power calculations, we use the following variables:</p>
+<ol style="list-style-type: decimal">
+<li>nE: number of participants in the experimental group.</li>
+<li>nC: number of participants in the control group.</li>
+<li>k: ratio between the number of participants in the control and
+experimental group</li>
+<li>pE: probability of failure in group E (experimental group) over the
+maximum time period of the study (t years).</li>
+<li>pC: probability of failure in group C (control group) over the
+maximum time period of the study (t years).</li>
+<li>RR: postulated hazard ratio (HR &lt; 1 signifies a lower hazard and
+potential benefit).</li>
+<li>alpha: type I error rate</li>
+</ol>
+<div id="finding-the-sample-size-2" class="section level4">
+<h4>Finding the Sample Size</h4>
+<pre class="r"><code># example: unknown (output) = sample size (nE and nC); 
+# ssizeCT.default(power = , k = , pE = , pC = , RR = , alpha = )
+ssizeCT.default(power = 0.8,
+                k = 1,
+                pE = 0.5,
+                pC = 0.8,
+                RR = 0.7,
+                alpha = 0.05)</code></pre>
+<pre><code>##  nE  nC 
+## 194 194</code></pre>
+</div>
+<div id="finding-the-power-1" class="section level4">
+<h4>Finding the Power</h4>
+<pre class="r"><code># example: unknown (output) = power; 
+# powerCT.default(nE = , nC = , pE = , pC = , RR = , alpha = )
+powerCT.default(nE = 200,
+                nC = 200,
+                pE = 0.3707,
+                pC = 0.4890,
+                RR = 0.7,
+                alpha = 0.05)</code></pre>
+<pre><code>## [1] 0.6383389</code></pre>
+</div>
 </div>
 </div>
 
