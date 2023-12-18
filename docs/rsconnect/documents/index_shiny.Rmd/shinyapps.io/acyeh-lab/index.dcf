@@ -1,0 +1,12 @@
+name: index
+title: index
+username: acyeh-lab
+account: acyeh-lab
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 10816858
+bundleId: 8059620
+url: https://acyeh-lab.shinyapps.io/index/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
