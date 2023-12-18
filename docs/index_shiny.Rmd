@@ -14,6 +14,12 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 #install.packages("pwr")
 #install.packages("tidyr")
 #install.packages("ggplot2")
+
+# My shiny key for website: https://www.shinyapps.io/admin/#/dashboard
+#rsconnect::setAccountInfo(name='acyeh-lab',
+#			  token='88D406AC92919BEB8DC3C7E70C702548',
+#			  secret='5rMLAFXpv9kZL0dZkC/zUN0UacdCLAGyJFWS/4Pl')
+
 ```
 
 
