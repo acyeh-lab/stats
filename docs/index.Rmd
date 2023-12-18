@@ -110,7 +110,7 @@ Please visit this site for an interactive version of the above graph: https://ac
 The above case provides a simple example using outcomes from a t-test to conduct a power analysis. There are other common situations that may arise where a different formula is needed for power analysis as outcomes are being measured differently.  
 
 ### Effect sizes
-Power calculations to determine sample size requires an input for effect size. Different test outcomes calculate effect sizes differently - common situations are shown below, along with the generally accepted "small", "medium", and "large" effect sizes.
+Power calculations to determine sample size requires an input for effect size. Different test outcomes calculate effect sizes differently - common situations are shown below, along with the generally accepted "small", "medium", and "large" effect sizes. Note that for more complex outcome measurements (such as for cox-proportional hazards model for survival analysis), there is not a simple variable that captures the effect size.
 ```{r plot types of power anlyses, echo=FALSE, results='markup'}
 t_test <- c("Cohen's d", 0.2, 0.5, 0.8)
 prop_test <- c("Cohen's h", 0.2, 0.5, 0.8)
@@ -286,7 +286,6 @@ ssizeCT.default(power = 0.8,
 
 
 #### Finding the Power
-
 ```{r, echo=TRUE, results='markup'}
 # example: unknown (output) = power; 
 # powerCT.default(nE = , nC = , pE = , pC = , RR = , alpha = )
@@ -303,6 +302,5 @@ powerCT.default(nE = 200,
 
 
               
-             
 
 
