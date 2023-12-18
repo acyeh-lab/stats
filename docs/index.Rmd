@@ -30,8 +30,11 @@ To perform a power analysis, you need three of the four variables (you can deter
 
 Note that if you change the statistical procedure used to analyze the data, you will most likely have to redo the power analysis, as the procedure is different for t-tests vs. chi-squared vs. regression etc...
 
+**There is NOT a simple formula for determining sample size for every research situation.** The reality it that there are many research situations that are so complex that they almost defy rational power analysis. In most cases, power analysis involves a number of simplifying assumptions, in order to make the problem tractable, and running the power analysis numerous times with different variations to cover all of the contingencies.
+
 ### Implementation
 We can compute a power analysis using functions from the `pwr` package. The `tidyr` and `dplyr` package will be used to help generate / manipulate data points and `ggplot2` will be used for plotting data. Make sure to install the packages first, e.g. `install.packages("pwr")`
+
 ```{r library load, echo=TRUE, results='hide'}
 library(pwr)
 library(tidyr)
