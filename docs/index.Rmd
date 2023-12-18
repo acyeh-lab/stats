@@ -291,11 +291,10 @@ ssizeCT.default(power = 0.8,
 # powerCT.default(nE = , nC = , pE = , pC = , RR = , alpha = )
 powerCT.default(nE = 200,
                 nC = 200,
-                pE = 0.3707,
-                pC = 0.4890,
+                pE = 0.5,
+                pC = 0.8,
                 RR = 0.7,
                 alpha = 0.05)
-
 ```
 
 
