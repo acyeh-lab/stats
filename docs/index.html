@@ -636,17 +636,14 @@ cover all of the contingencies.</p>
 </div>
 <div id="implementation" class="section level3">
 <h3>Implementation</h3>
-<p>We can compute a power analysis using functions from the
-<code>pwr</code> package. The <code>tidyr</code>, <code>dplyr</code>,
-and <code>kableExtra</code> packages will be used to help generate /
-manipulate / display data and <code>ggplot2</code> will be used for
-plotting data. Make sure to install the packages first,
+<p>Make sure to install the necessary packages first,
 e.g. <code>install.packages(&quot;pwr&quot;)</code></p>
-<pre class="r"><code>library(pwr)
-library(tidyr)
-library(ggplot2)
-library(dplyr)
-library(kableExtra)</code></pre>
+<pre class="r"><code>library(pwr) # Basic power analysis package
+library(WebPower) # Advanced power analysis package
+library(tidyr) # For data manipulation
+library(dplyr) # For data manipulation
+library(kableExtra) # For displaying data
+library(ggplot2) # For plotting data</code></pre>
 </div>
 </div>
 <div id="part-1-visualizing-a-basic-power-analysis-for-t-tests" class="section level2">
@@ -874,13 +871,15 @@ F^2
 </div>
 <div id="modeling-in-r" class="section level3">
 <h3>Modeling in R</h3>
-To perform power calculations in R, one can use the <code>pwr</code>
-package per above. Common functions included in the package for power
-calculations are shown below:
+Common functions included in the package for power calculations are
+shown below:
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+R package
 </th>
 <th style="text-align:left;">
 R function using ‘pwr’ package
@@ -893,12 +892,18 @@ R function using ‘pwr’ package
 T-test
 </td>
 <td style="text-align:left;">
+pwr
+</td>
+<td style="text-align:left;">
 pwr.t2n.test(n1 = , n2= , d = , sig.level =, power = )
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
 Test of proportion
+</td>
+<td style="text-align:left;">
+pwr
 </td>
 <td style="text-align:left;">
 pwr.2p2n.test(h = , n1 = , n2 = , sig.level = , power = )
@@ -909,12 +914,18 @@ pwr.2p2n.test(h = , n1 = , n2 = , sig.level = , power = )
 Chi-squared test (X^2)
 </td>
 <td style="text-align:left;">
+pwr
+</td>
+<td style="text-align:left;">
 pwr.chisq.test(w =, N = , df = , sig.level =, power = )
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
 Analysis of variance (ANOVA)
+</td>
+<td style="text-align:left;">
+pwr
 </td>
 <td style="text-align:left;">
 pwr.anova.test(k = , n = , f = , sig.level = , power = )
@@ -925,6 +936,9 @@ pwr.anova.test(k = , n = , f = , sig.level = , power = )
 Pearson’s correlation
 </td>
 <td style="text-align:left;">
+pwr
+</td>
+<td style="text-align:left;">
 pwr.r.test(n = , r = , sig.level = , power = )
 </td>
 </tr>
@@ -933,7 +947,21 @@ pwr.r.test(n = , r = , sig.level = , power = )
 Linear regression
 </td>
 <td style="text-align:left;">
+pwr
+</td>
+<td style="text-align:left;">
 pwr.f2.test(u =, v = , f2 = , sig.level = , power = )
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Logistic regression
+</td>
+<td style="text-align:left;">
+WebPower
+</td>
+<td style="text-align:left;">
+wp.logistic(n = , p0 = , p1 = , alpha = , power = )
 </td>
 </tr>
 </tbody>
@@ -1062,6 +1090,64 @@ pwr.chisq.test(w=0.3,
 <p>In the above situation, “N”=87, suggesting that we need at least 87
 samples to observe the desired effect size for a 2x2 table.</p>
 </div>
+</div>
+<div id="logistic-regression" class="section level3">
+<h3>Logistic Regression</h3>
+<p>Unlike a linear regression where the outcome is continuous
+(e.g. diastolic blood pressure change), a logistic regression is used to
+predict a binary outcome (e.g. improvement or no improvement), based on
+prior observations of a data set.</p>
+<p>Unlike the other tests mentioned before, there is not one “effect
+size” statistic for logistic regression, but power calculation can still
+be performed if we can estimate the following two statistics
+instead:</p>
+<ol style="list-style-type: decimal">
+<li><p>p0 Prob(Y=1|X=0): the probability of observing 1 for the outcome
+variable Y when the predictor X equals 0.</p></li>
+<li><p>p1 Prob(Y=1|X=1): the probability of observing 1 for the outcome
+variable Y when the predictor X equals 1.</p></li>
+</ol>
+<p>This can sound a bit confusing, but let’s consider the following
+example:</p>
+<p>Suppose you are investigating the effect of drug “A” vs. placebo on
+the occurrence of heart attacks. Let’s define the variables as
+follows:</p>
+<ol style="list-style-type: decimal">
+<li>Y (Outcome Variable): Whether a patient experiences a heart attack
+(1 = yes, 0 = no improvement).</li>
+<li>X (Predictor Variable): Whether a patient receives the new
+medication (1 = medication “A”, 0 = no medication/placebo).</li>
+</ol>
+<p>Then the probabilities above can be thought of as:</p>
+<ol style="list-style-type: decimal">
+<li>p0 Prob(Y=1|X=0): The probability of observing an improvement in
+patients who did not receive the medication (placebo group).</li>
+<li>p1 Prob(Y=1|X=1): The probability of observing an improvement in
+patients who received the medication.</li>
+</ol>
+<p>In planning the study, you might want to determine the necessary
+sample size to achieve a desired power for detecting a significant
+effect of a medication. You would use estimates for p0 and p1 based on
+previous research or preliminary data. For example, if preliminary
+studies suggest that 30% of patients improve with no medication (p0 =
+0.30) and 50% improve with the medication (p1 = 0.50), you could use
+wp.logistic to calculate the required sample size to detect this
+difference with a certain power and at a 0.05 significance level.</p>
+<pre class="r"><code># example:  n=Unknown observations, p0=0.3 p1=0.5, sig.level=.05, power=0.80
+wp.logistic(n = NULL, 
+            p0 = 0.30, 
+            p1 = 0.50, 
+            alpha = 0.05,
+            power = 0.80,
+            family=&quot;Bernoulli&quot;)</code></pre>
+<pre><code>## Power for logistic regression
+## 
+##      p0  p1      beta0     beta1        n alpha power
+##     0.3 0.5 -0.8472979 0.8472979 191.5856  0.05   0.8
+## 
+## URL: http://psychstat.org/logistic</code></pre>
+<p>We see that using p0=0.30 and p1=0.50, we get an “N”=192, suggesting
+we should have at least 192 observations.</p>
 </div>
 </div>
 

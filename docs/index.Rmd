@@ -14,6 +14,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 #install.packages("tidyr")
 #install.packages("ggplot2")
 #install.packages("kableExtra")
+#install.packages("WebPower")
 ```
 ## Power Analyses
 
@@ -34,14 +35,15 @@ Note that if you change the statistical procedure used to analyze the data, you 
 **There is NOT a simple formula for determining sample size for every research situation.** The reality it that there are many research situations that are so complex that they almost defy rational power analysis. In most cases, power analysis involves a number of simplifying assumptions, in order to make the problem tractable, and running the power analysis numerous times with different variations to cover all of the contingencies.
 
 ### Implementation
-We can compute a power analysis using functions from the `pwr` package. The `tidyr`, `dplyr`, and `kableExtra` packages will be used to help generate / manipulate / display data  and `ggplot2` will be used for plotting data. Make sure to install the packages first, e.g. `install.packages("pwr")`
+Make sure to install the necessary packages first, e.g. `install.packages("pwr")`
 
 ```{r library load, echo=TRUE, results='hide'}
-library(pwr)
-library(tidyr)
-library(ggplot2)
-library(dplyr)
-library(kableExtra)
+library(pwr) # Basic power analysis package
+library(WebPower) # Advanced power analysis package
+library(tidyr) # For data manipulation
+library(dplyr) # For data manipulation
+library(kableExtra) # For displaying data
+library(ggplot2) # For plotting data
 ```
 
 ## Part 1: Visualizing a Basic Power Analysis for T-tests
@@ -123,17 +125,19 @@ df %>%
 ```
 
 ### Modeling in R
-To perform power calculations in R, one can use the `pwr` package per above.  Common functions included in the package for power calculations are shown below:
+Common functions included in the package for power calculations are shown below:
 ```{r power analyses commands, echo=FALSE, results='markup'}
-t_test <- c("pwr.t2n.test(n1 = , n2= , d = , sig.level =, power = )")
-prop_test <- c("pwr.2p2n.test(h = , n1 = , n2 = , sig.level = , power = )")
-chi_sq <- c("pwr.chisq.test(w =, N = , df = , sig.level =, power = )")
-ANOVA <- c("pwr.anova.test(k = , n = , f = , sig.level = , power = )")
-pearson <- c("pwr.r.test(n = , r = , sig.level = , power = )")
-linear_reg <- c("pwr.f2.test(u =, v = , f2 = , sig.level = , power = )")
-df<-data.frame(rbind(t_test,prop_test,chi_sq,ANOVA,pearson,linear_reg))
-colnames(df) <- c("R function using 'pwr' package")
-row.names(df) <- c("T-test", "Test of proportion","Chi-squared test (X^2)","Analysis of variance (ANOVA)", "Pearson's correlation", "Linear regression")
+t_test <- c("pwr","pwr.t2n.test(n1 = , n2= , d = , sig.level =, power = )")
+prop_test <- c("pwr","pwr.2p2n.test(h = , n1 = , n2 = , sig.level = , power = )")
+chi_sq <- c("pwr","pwr.chisq.test(w =, N = , df = , sig.level =, power = )")
+ANOVA <- c("pwr","pwr.anova.test(k = , n = , f = , sig.level = , power = )")
+pearson <- c("pwr","pwr.r.test(n = , r = , sig.level = , power = )")
+linear_reg <- c("pwr","pwr.f2.test(u =, v = , f2 = , sig.level = , power = )")
+logit_reg <- c("WebPower","wp.logistic(n = , p0 = , p1 = , alpha = , power = )")
+
+df<-data.frame(rbind(t_test,prop_test,chi_sq,ANOVA,pearson,linear_reg,logit_reg))
+colnames(df) <- c("R package", "R function using 'pwr' package")
+row.names(df) <- c("T-test", "Test of proportion","Chi-squared test (X^2)","Analysis of variance (ANOVA)", "Pearson's correlation", "Linear regression", "Logistic regression")
 
 df %>%
   kbl() %>%
@@ -213,3 +217,39 @@ pwr.chisq.test(w=0.3,
 
 ```
 In the above situation, "N"=87, suggesting that we need at least 87 samples to observe the desired effect size for a 2x2 table.
+
+
+### Logistic Regression 
+Unlike a linear regression where the outcome is continuous (e.g. diastolic blood pressure change), a logistic regression is used to predict a binary outcome (e.g. improvement or no improvement), based on prior observations of a data set.
+
+Unlike the other tests mentioned before, there is not one "effect size" statistic for logistic regression, but power calculation can still be performed if we can estimate the following two statistics instead:
+
+1. p0 Prob(Y=1|X=0): the probability of observing 1 for the outcome variable Y when the predictor X equals 0.
+
+2. p1	Prob(Y=1|X=1): the probability of observing 1 for the outcome variable Y when the predictor X equals 1.
+
+This can sound a bit confusing, but let's consider the following example:
+
+Suppose you are investigating the effect of drug "A" vs. placebo on the occurrence of heart attacks. Let's define the variables as follows:
+
+1. Y (Outcome Variable): Whether a patient experiences a heart attack (1 = yes, 0 = no improvement).
+2. X (Predictor Variable): Whether a patient receives the new medication (1 = medication "A", 0 = no medication/placebo).
+
+Then the probabilities above can be thought of as:
+
+1. p0 Prob(Y=1|X=0): The probability of observing an improvement in patients who did not receive the medication (placebo group).
+2. p1 Prob(Y=1|X=1): The probability of observing an improvement in patients who received the medication.
+
+In planning the study, you might want to determine the necessary sample size to achieve a desired power for detecting a significant effect of a medication. You would use estimates for p0 and p1 based on previous research or preliminary data. For example, if preliminary studies suggest that 30% of patients improve with no medication (p0 = 0.30) and 50% improve with the medication (p1 = 0.50), you could use wp.logistic to calculate the required sample size to detect this difference with a certain power and at a 0.05 significance level.
+```{r, echo=TRUE, results='markup'}
+# example:  n=Unknown observations, p0=0.3 p1=0.5, sig.level=.05, power=0.80
+wp.logistic(n = NULL, 
+            p0 = 0.30, 
+            p1 = 0.50, 
+            alpha = 0.05,
+            power = 0.80,
+            family="Bernoulli")
+```
+We see that using p0=0.30 and p1=0.50, we get an "N"=192, suggesting we should have at least 192 observations.
+
+
