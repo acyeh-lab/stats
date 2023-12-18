@@ -139,3 +139,54 @@ df %>%
   kbl() %>%
   kable_styling()
 ```
+
+### Linear Regression (General Linear Model) 
+Linear regression analysis is used to predict the value of an independent variable based on the value of dependent variable(s). This form of analysis estimates the coefficients of the linear equation, involving one or more independent variables that best predict the value of the dependent variable.
+
+#### Finding the Power
+If one looks at the power calculation for linear regression, the effect size is noted as "f^2", where f^2 = R^2 / (1-R^2).  We also see two other variables we haven't encountered: "u" and "v".  "u" is the number of dependent variables minus 1 (a.k.a. numerator degrees of freedom), where "v" is the sample size minus dependent variables (a.k.a. denominator degrees of freedom).
+
+Let us take an example, where we have f^2, u, v, alpha, and are looking for power:
+```{r, echo=TRUE, results='markup'}
+# example: k=3 predictors, n=100 observations, R^2 = .1, sig.level = .05 (default)
+pwr.f2.test(u = 2,
+            v = 97,
+            f2 = .1/.9,
+            sig.level = 0.05,
+            power = NULL)
+
+```
+
+
+#### Finding the Sample Size
+Now, let's say we are trying to find how many samples we should have if we are given 5 dependent variables, assuming an "f^2" of 0.15 (medium effect size), a desired power of 0.8, and alpha 0.05:
+
+```{r, echo=TRUE, results='markup'}
+# example: k=5 predictors, n=Unknown observations, R^2 = .15, sig.level = .05 (default)
+pwr.f2.test(u = 4,
+            v = NULL,
+            f2 = .15/.85,
+            sig.level = 0.05,
+            power = 0.80)
+
+```
+In the above situation, "v" is ~68, so our sample size should be approximately 70 to acheive a power of 0.80 at alpha 0.05.
+
+#### Finding how many dependent variables we can use
+A common situation is when we want to decide in our regression model how many dependent variables we can use - we know that if we try to regress on too many variables in relation to our sample size, we risk "overfitting". When there are too many predictors, the model can start to "learn" the noise in the data instead of the actual underlying relationship. This means it fits the training data very well, including the random fluctuations, but performs poorly on new, unseen data.
+```{r, echo=TRUE, results='markup'}
+# example: k=Unknown, n=100 observations, R^2 = .15, sig.level = .05 (default)
+pwr.f2.test(u = NULL,
+            v = 100,
+            f2 = .15/.85,
+            sig.level = 0.05,
+            power = 0.80)
+
+```
+In the above situation, "u" ~13, meaning that we can use about 13 dependent variables to acheive the desired power of 0.80 at the given alpha (assuming a "medium" effect size of f^2=0.15).
+
+### Chi-squared test
+For the chi-square test, the effect size index w is calculated by dividing the chi-square value by the number of scores and taking the square root.
+
+#### Finding the Power
+
