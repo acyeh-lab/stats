@@ -4,7 +4,7 @@ author: "Albert Yeh"
 date: "12/17/2023"
 output: html_document
 ---
-For a great introductory R Workshop on working and visualizing data analyses, please visit Dr. Andrew Portuguese's site: https://aportugu.github.io/Rworkshop/.
+For a great introductory R Workshop on working with and visualizing data analyses, please visit Dr. Andrew Portuguese's site: https://aportugu.github.io/Rworkshop/.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
@@ -24,7 +24,7 @@ Power analysis is a critical part of experimental design with the primary purpos
 Why is it important?  First, a power analysis is a good way of making sure that you have thought through every aspect of the study and the statistical analysis before you start collecting data. This is critical in designing clinical experiments and also in data analyses where you want to gauge if you have enough sample size to conduct a meaningful analysis. There are other uses as well, if say you have only a fixed number of samples available and want to determine what type of effect size you can hope to detect.
 
 ### Considerations
-To perform most basic power analyses, you need three of the four variables (you can determine the last variable if given the first 3):
+To perform most basic power analyses, you need three of the four variables (you can determine the last variable if given the other 3):
 
 1. **Sample size** = This is your "N". Will need to specificy if same for both groups or different. If only 1 value is given, it assumes both groups have at least that sample size.
 2. **Effect size** = This represents the magnitude of an experimental outcome. There are different types depending on the statistical test being used.  Most common is "Cohen's d" for t-tests. otherise include "f" for ANOVA, "r" for correlations, and "w" for chi-squared tests. Generally, an effect size of 0.10 is considered small, 0.20-0.30 is medium, and >0.50 is relatively large. Note that there are dozens different measures of effect sizes. Many effect sizes of different types can be converted to other types, as many estimate the separation of two distributions, so are mathematically related. For example, a correlation coefficient can be converted to a Cohen's d and vice versa.
@@ -33,7 +33,7 @@ To perform most basic power analyses, you need three of the four variables (you 
 
 Note that if you change the statistical procedure used to analyze the data, you will most likely have to redo the power analysis, as the procedure is different for t-tests vs. chi-squared vs. regression etc...
 
-**There is NOT a simple formula for determining sample size for every research situation.** The reality it that there are many research situations that are so complex that they almost defy rational power analysis. In most cases, power analysis involves a number of simplifying assumptions, in order to make the problem tractable, and running the power analysis numerous times with different variations to cover all of the contingencies.
+**There is NOT a simple formula for determining effect size for every research situation.** The reality it that there are many research situations that are so complex that they almost defy rational power analysis. In most cases, power analysis involves a number of simplifying assumptions, in order to make the problem tractable, and running the power analysis numerous times with different variations to cover all of the contingencies.
 
 ### Implementation
 Make sure to install the necessary packages first, e.g. `install.packages("pwr")`
