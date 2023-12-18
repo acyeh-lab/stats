@@ -144,11 +144,15 @@ df %>%
 Linear regression analysis is used to predict the value of an independent variable based on the value of dependent variable(s). This form of analysis estimates the coefficients of the linear equation, involving one or more independent variables that best predict the value of the dependent variable.
 
 #### Finding the Power
-If one looks at the power calculation for linear regression, the effect size is noted as "f^2", where f^2 = R^2 / (1-R^2).  We also see two other variables we haven't encountered: "u" and "v".  "u" is the number of dependent variables minus 1 (a.k.a. numerator degrees of freedom), where "v" is the sample size minus dependent variables (a.k.a. denominator degrees of freedom).
+If one looks at the power calculation for linear regression, the effect size is noted as "f^2":
+$$
+  f^2 = \frac{R^2}{1-R^2}
+$$
+Where R is the correlation coefficient. We also see two other variables we haven't encountered: "u" and "v".  "u" is the number of dependent variables minus 1 (a.k.a. numerator degrees of freedom), where "v" is the sample size minus dependent variables (a.k.a. denominator degrees of freedom).
 
 Let us take an example, where we have f^2, u, v, alpha, and are looking for power:
 ```{r, echo=TRUE, results='markup'}
-# example: k=3 predictors, n=100 observations, R^2 = .1, sig.level = .05 (default)
+# example: k=3 predictors, n=100 observations, R^2 = .1, sig.level = .05
 pwr.f2.test(u = 2,
             v = 97,
             f2 = .1/.9,
@@ -162,7 +166,7 @@ pwr.f2.test(u = 2,
 Now, let's say we are trying to find how many samples we should have if we are given 5 dependent variables, assuming an "f^2" of 0.15 (medium effect size), a desired power of 0.8, and alpha 0.05:
 
 ```{r, echo=TRUE, results='markup'}
-# example: k=5 predictors, n=Unknown observations, R^2 = .15, sig.level = .05 (default)
+# example: k=5 predictors, n=Unknown observations, R^2 = .15, sig.level = .05, power=0.80
 pwr.f2.test(u = 4,
             v = NULL,
             f2 = .15/.85,
@@ -175,7 +179,7 @@ In the above situation, "v" is ~68, so our sample size should be approximately 7
 #### Finding how many dependent variables we can use
 A common situation is when we want to decide in our regression model how many dependent variables we can use - we know that if we try to regress on too many variables in relation to our sample size, we risk "overfitting". When there are too many predictors, the model can start to "learn" the noise in the data instead of the actual underlying relationship. This means it fits the training data very well, including the random fluctuations, but performs poorly on new, unseen data.
 ```{r, echo=TRUE, results='markup'}
-# example: k=Unknown, n=100 observations, R^2 = .15, sig.level = .05 (default)
+# example: k=Unknown, n=100 observations, R^2 = .15, sig.level = .05, power=0.80
 pwr.f2.test(u = NULL,
             v = 100,
             f2 = .15/.85,
@@ -186,7 +190,26 @@ pwr.f2.test(u = NULL,
 In the above situation, "u" ~13, meaning that we can use about 13 dependent variables to acheive the desired power of 0.80 at the given alpha (assuming a "medium" effect size of f^2=0.15).
 
 ### Chi-squared test
-For the chi-square test, the effect size index w is calculated by dividing the chi-square value by the number of scores and taking the square root.
+For the chi-square test, the effect size index w is calculated by dividing the chi-square value by the total count in all of the cells and taking the square root. 
+$$
+  W=\sqrt{\frac{\chi^2}{N}}
+$$
+Where the formula for calculating the the chi-squared statistics is found by summing the squares of differences between observed and expected cell counts divided by the expected cell count for each cell:
+$$
+  \chi^2 = \sum_{i=1}^{m}\frac{(O_i-E_i)^2}{E_i}
+$$
 
-#### Finding the Power
 
+#### Finding the Sample Size
+Now, let's say we are trying to find how many samples we should have if we have a medium effect size (Cohen's w = 0.3) for a 2x2 contingency table, using standard parameters power=0.8 and alpha=0.05. We will also need to put in the degrees of freedom, which is calculated by df=(r-1)(c-1). So for a 2x2 contingency table, the degrees of freedom is 1.
+
+```{r, echo=TRUE, results='markup'}
+# example: w=0.3 n=Unknown observations, df=1, sig.level = .05, power=0.80
+pwr.chisq.test(w=0.3,
+            N=NULL,
+            df=1,
+            sig.level = 0.05,
+            power = 0.80)
+
+```
+In the above situation, "N"=87, suggesting that we need at least 87 samples to observe the desired effect size for a 2x2 table.
