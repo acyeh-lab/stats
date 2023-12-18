@@ -110,7 +110,7 @@ Please visit this site for an interactive version of the above graph: https://ac
 The above case provides a simple example using outcomes from a t-test to conduct a power analysis. There are other common situations that may arise where a different formula is needed for power analysis as outcomes are being measured differently.  
 
 ### Effect sizes
-Power calculations to determine sample size requires an input for effect size. Different test outcomes calculate effect sizes differently - common situations are shown below, along with the generally accepted "small", "medium", and "large" effect sizes. Note that for more complex outcome measurements (such as for cox-proportional hazards model for survival analysis), there is not a simple variable that captures the effect size.
+Power calculations to determine sample size requires an input for effect size. Different test outcomes calculate effect sizes differently - common situations are shown below, along with the generally accepted "small", "medium", and "large" effect sizes. Note that for more complex outcome measurements (such as for cox-proportional hazards model for survival analysis), there is not a simple "effect size" variable that captures all of the parameters necessary for analysis.
 ```{r plot types of power anlyses, echo=FALSE, results='markup'}
 t_test <- c("Cohen's d", 0.2, 0.5, 0.8)
 prop_test <- c("Cohen's h", 0.2, 0.5, 0.8)
@@ -118,9 +118,11 @@ chi_sq <- c("Cohen's w", 0.1, 0.3, 0.5)
 ANOVA <- c("Cohen's f", 0.1, 0.25, 0.4)
 pearson <- c("R (correlation)", 0.1, 0.3, 0.5)
 linear_reg <- c("F^2", 0.02, 0.15, 0.35)
-df<-data.frame(rbind(t_test,prop_test,chi_sq,ANOVA,pearson,linear_reg))
+logit_reg <- c("Odds ratio", "N/A", "N/A", "N/A")
+survival <- c("Hazard ratio", "N/A", "N/A", "N/A")
+df<-data.frame(rbind(t_test,prop_test,chi_sq,ANOVA,pearson,linear_reg, logit_reg, survival))
 colnames(df) <- c("Effect Size", "Small", "Medium","Large")
-row.names(df) <- c("T-test", "Test of proportion","Chi-squared test (X^2)","Analysis of variance (ANOVA)", "Pearson's correlation", "Linear regression")
+row.names(df) <- c("T-test", "Test of proportion","Chi-squared test (X^2)","Analysis of variance (ANOVA)", "Pearson's correlation", "Linear regression", "Logistic regression", "Survival analysis")
 
 df %>%
   kbl() %>%
