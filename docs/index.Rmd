@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 #install.packages("pwr")
 #install.packages("tidyr")
 #install.packages("ggplot2")
+#install.packages("kableExtra")
 ```
 ## Power Analyses
 
@@ -33,13 +34,14 @@ Note that if you change the statistical procedure used to analyze the data, you 
 **There is NOT a simple formula for determining sample size for every research situation.** The reality it that there are many research situations that are so complex that they almost defy rational power analysis. In most cases, power analysis involves a number of simplifying assumptions, in order to make the problem tractable, and running the power analysis numerous times with different variations to cover all of the contingencies.
 
 ### Implementation
-We can compute a power analysis using functions from the `pwr` package. The `tidyr` and `dplyr` package will be used to help generate / manipulate data points and `ggplot2` will be used for plotting data. Make sure to install the packages first, e.g. `install.packages("pwr")`
+We can compute a power analysis using functions from the `pwr` package. The `tidyr`, `dplyr`, and `kableExtra` packages will be used to help generate / manipulate / display data  and `ggplot2` will be used for plotting data. Make sure to install the packages first, e.g. `install.packages("pwr")`
 
 ```{r library load, echo=TRUE, results='hide'}
 library(pwr)
 library(tidyr)
 library(ggplot2)
 library(dplyr)
+library(kableExtra)
 ```
 
 ## Part 1: Visualizing a Basic Power Analysis for T-tests
@@ -99,4 +101,41 @@ As we can see from the graph above, the sample size needed to achieve a power of
 ### An Interactive Follow-up
 Please visit this site for an interactive version of the above graph: https://acyeh-lab.shinyapps.io/docs/
 
-## Power Analyses - Extension to Other Outcome Measurements
+## Part 2: Power Analyses - Extension to Other Outcome Measurements
+The above case provides a simple example using outcomes from a t-test to conduct a power analysis. There are other common situations that may arise where a different formula is needed for power analysis as outcomes are being measured differently.  
+
+### Effect sizes
+Power calculations to determine sample size requires an input for effect size. Different test outcomes calculate effect sizes differently - common situations are shown below, along with the generally accepted "small", "medium", and "large" effect sizes.
+```{r plot types of power anlyses, echo=FALSE, results='markup'}
+t_test <- c("Cohen's d", 0.2, 0.5, 0.8)
+prop_test <- c("Cohen's h", 0.2, 0.5, 0.8)
+chi_sq <- c("Cohen's w", 0.1, 0.3, 0.5)
+ANOVA <- c("Cohen's f", 0.1, 0.25, 0.4)
+pearson <- c("R (correlation)", 0.1, 0.3, 0.5)
+linear_reg <- c("F^2", 0.02, 0.15, 0.35)
+df<-data.frame(rbind(t_test,prop_test,chi_sq,ANOVA,pearson,linear_reg))
+colnames(df) <- c("Effect Size", "Small", "Medium","Large")
+row.names(df) <- c("T-test", "Test of proportion","Chi-squared test (X^2)","Analysis of variance (ANOVA)", "Pearson's correlation", "Linear regression")
+
+df %>%
+  kbl() %>%
+  kable_styling()
+```
+
+### Modeling in R
+To perform power calculations in R, one can use the `pwr` package per above.  Common functions included in the package for power calculations are shown below:
+```{r power analyses commands, echo=FALSE, results='markup'}
+t_test <- c("pwr.t2n.test(n1 = , n2= , d = , sig.level =, power = )")
+prop_test <- c("pwr.2p2n.test(h = , n1 = , n2 = , sig.level = , power = )")
+chi_sq <- c("pwr.chisq.test(w =, N = , df = , sig.level =, power = )")
+ANOVA <- c("pwr.anova.test(k = , n = , f = , sig.level = , power = )")
+pearson <- c("pwr.r.test(n = , r = , sig.level = , power = )")
+linear_reg <- c("pwr.f2.test(u =, v = , f2 = , sig.level = , power = )")
+df<-data.frame(rbind(t_test,prop_test,chi_sq,ANOVA,pearson,linear_reg))
+colnames(df) <- c("R function using 'pwr' package")
+row.names(df) <- c("T-test", "Test of proportion","Chi-squared test (X^2)","Analysis of variance (ANOVA)", "Pearson's correlation", "Linear regression")
+
+df %>%
+  kbl() %>%
+  kable_styling()
+```
