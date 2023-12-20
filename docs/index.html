@@ -2276,12 +2276,16 @@ statistics is found by summing the squares of differences between
 observed and expected cell counts divided by the expected cell count for
 each cell: <span class="math display">\[
   \chi^2 = \sum_{i=1}^{m}\frac{(O_i-E_i)^2}{E_i}
-\]</span> ### Finding the Sample Size Now, let’s say we are trying to
-find how many samples we should have if we have a medium effect size
-(Cohen’s w = 0.3) for a 2x2 contingency table, using standard parameters
-power=0.8 and alpha=0.05. We will also need to put in the degrees of
-freedom, which is calculated by df=(r-1)(c-1). So for a 2x2 contingency
-table, the degrees of freedom is 1.</p>
+\]</span></p>
+<div id="finding-the-sample-size-1" class="section level3" number="3.4.1">
+<h3><span class="header-section-number">3.4.1</span> Finding the Sample
+Size</h3>
+<p>Now, let’s say we are trying to find how many samples we should have
+if we have a medium effect size (Cohen’s w = 0.3) for a 2x2 contingency
+table, using standard parameters power=0.8 and alpha=0.05. We will also
+need to put in the degrees of freedom, which is calculated by
+df=(r-1)(c-1). So for a 2x2 contingency table, the degrees of freedom is
+1.</p>
 <pre class="r"><code># example: w=0.3 n=Unknown observations, df=1, sig.level = .05, power=0.80
 pwr.chisq.test(w=0.3,
                N=NULL,
@@ -2300,6 +2304,7 @@ pwr.chisq.test(w=0.3,
 ## NOTE: N is the number of observations</code></pre>
 <p>In the above situation, “N”=87, suggesting that we need at least 87
 samples to observe the desired effect size for a 2x2 table.</p>
+</div>
 </div>
 <div id="logistic-regression" class="section level2" number="3.5">
 <h2><span class="header-section-number">3.5</span> Logistic
@@ -2391,7 +2396,7 @@ maximum time period of the study (t years).</li>
 potential benefit).</li>
 <li>alpha: type I error rate</li>
 </ol>
-<div id="finding-the-sample-size-1" class="section level3" number="3.6.1">
+<div id="finding-the-sample-size-2" class="section level3" number="3.6.1">
 <h3><span class="header-section-number">3.6.1</span> Finding the Sample
 Size</h3>
 <pre class="r"><code># example: unknown (output) = sample size (nE and nC); 

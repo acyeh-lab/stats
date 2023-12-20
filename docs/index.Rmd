@@ -216,6 +216,7 @@ Where the formula for calculating the the chi-squared statistics is found by sum
 $$
   \chi^2 = \sum_{i=1}^{m}\frac{(O_i-E_i)^2}{E_i}
 $$
+
 ### Finding the Sample Size
 Now, let's say we are trying to find how many samples we should have if we have a medium effect size (Cohen's w = 0.3) for a 2x2 contingency table, using standard parameters power=0.8 and alpha=0.05. We will also need to put in the degrees of freedom, which is calculated by df=(r-1)(c-1). So for a 2x2 contingency table, the degrees of freedom is 1.
 
