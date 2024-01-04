@@ -1,6 +1,6 @@
 ---
 title: "Stats Tutorials in R"
-author: "Albert Yeh"
+author: "By: Albert Yeh"
 ##date: "12/17/2023"
 #slug: gif-animations
 slug: jpeg-images
