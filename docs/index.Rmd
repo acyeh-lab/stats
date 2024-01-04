@@ -2,6 +2,8 @@
 title: "Stats Tutorials in R"
 author: "Albert Yeh"
 ##date: "12/17/2023"
+#slug: gif-animations
+slug: jpeg-images
 output: 
   html_document:
     toc: true
@@ -34,11 +36,15 @@ Why is it important?  First, a power analysis is a good way of making sure that 
 To perform most basic power analyses, you need three of the four variables (you can determine the last variable if given the other 3):
 
 1. **Sample size** = This is your "N". Will need to specificy if same for both groups or different. If only 1 value is given, it assumes both groups have at least that sample size.
-2. **Effect size** = This represents the magnitude of an experimental outcome. There are different types depending on the statistical test being used.  Most common is "Cohen's d" for t-tests. otherise include "f" for ANOVA, "r" for correlations, and "w" for chi-squared tests. Generally, an effect size of 0.10 is considered small, 0.20-0.30 is medium, and >0.50 is relatively large. Note that there are dozens different measures of effect sizes. Many effect sizes of different types can be converted to other types, as many estimate the separation of two distributions, so are mathematically related. For example, a correlation coefficient can be converted to a Cohen's d and vice versa.
-3. **Significance level** = P(Type I error) = probability of finding an effect that is not there. A standard benchmark is to use "0.05".
-4. **Power** = 1 - P(Type II error) = probability of finding an effect that is there. A standard benchmark is to use "0.80".
+2. **Effect size** = This represents the magnitude of an experimental outcome. There are different types depending on the statistical test being used.  Most common is "Cohen's d" for t-tests. otherise include "f" for ANOVA, "r" for correlations, and "w" for chi-squared tests. Generally, an effect size of 0.10 is considered small, 0.20-0.30 is medium, and >0.50 is relatively large. Note that there are dozens different measures of effect sizes. Many effect sizes of different types can be converted to other types, as many estimate the separation of two distributions, so are mathematically related. For example, a correlation coefficient can be converted to a Cohen's d and vice versa.  Of note, many of these standardized measures (like Cohen's d), for example, absorb the <i>variance</i> of the outcome as an implicit variable (sometimes the variance of the outcome is considered a separate parameter that influences power).
+3. **Significance level** = P(Type I error) = probability of finding an effect that is not there. A standard benchmark is to use "0.05". Also known as "alpha".
+4. **Power** = 1 - P(Type II error) = probability of finding an effect that is there. A standard benchmark is to use "0.80". Also know as "1-beta".
 
-Note that if you change the statistical procedure used to analyze the data, you will most likely have to redo the power analysis, as the procedure is different for t-tests vs. chi-squared vs. regression etc...
+The chart below is a quick reference guide on how power, significance level, and type I/II errors are related.
+
+![Above Image Courtesy of Kevin Ng](https://github.com/acyeh-lab/stats/blob/main/error_table.jpg?raw=true){width=500 height=400}
+
+<br>Note that if you change the statistical procedure used to analyze the data, you will most likely have to redo the power analysis, as the procedure is different for t-tests vs. chi-squared vs. regression etc...
 
 **There is NOT a simple formula for determining effect size for every research situation.** The reality it that there are many research situations that are so complex that they almost defy rational power analysis. In most cases, power analysis involves a number of simplifying assumptions, in order to make the problem tractable, and running the power analysis numerous times with different variations to cover all of the contingencies.
 
@@ -181,7 +187,7 @@ pwr.f2.test(u = 2,
 
 
 ### Finding the Sample Size
-Now, let's say we are trying to find how many samples we should have if we are given 5 dependent variables, assuming an "f^2" of 0.15 (medium effect size), a desired power of 0.8, and alpha 0.05:
+Now, let's say we are trying to find the size of the sample we should have if we are given 5 independent variables, assuming an "f^2" of 0.15 (medium effect size), a desired power of 0.8, and alpha 0.05:
 
 ```{r, echo=TRUE, results='markup'}
 # example: k=5 predictors, n=Unknown observations, R^2 = .15, sig.level = .05, power=0.80
@@ -194,7 +200,7 @@ pwr.f2.test(u = 4,
 ```
 In the above situation, "v" is ~68, so our sample size should be approximately 70 to acheive a power of 0.80 at alpha 0.05.
 
-### Finding how many dependent variables we can use
+### Finding how many independent variables we can use
 A common situation is when we want to decide in our regression model how many dependent variables we can use - we know that if we try to regress on too many variables in relation to our sample size, we risk "overfitting". When there are too many predictors, the model can start to "learn" the noise in the data instead of the actual underlying relationship. This means it fits the training data very well, including the random fluctuations, but performs poorly on new, unseen data.
 ```{r, echo=TRUE, results='markup'}
 # example: k=Unknown, n=100 observations, R^2 = .15, sig.level = .05, power=0.80
@@ -237,9 +243,9 @@ While a linear regression models continuous outcomes (e.g. blood pressure change
 
 We will use the `WebPower` package to perform our analysis. Unlike the other tests mentioned before, there is not one "effect size" statistic for logistic regression, but power calculation can still be performed if we can estimate the following two statistics instead:
 
-1. p0 Prob(Y=1|X=0): the probability of observing 1 for the outcome variable Y when the predictor X equals 0.
+1. p0 = Prob(Y=1|X=0): the probability of observing 1 for the outcome variable Y when the predictor X equals 0.
 
-2. p1	Prob(Y=1|X=1): the probability of observing 1 for the outcome variable Y when the predictor X equals 1.
+2. p1	= Prob(Y=1|X=1): the probability of observing 1 for the outcome variable Y when the predictor X equals 1.
 
 This can sound a bit confusing, but let's consider the following example:
 
@@ -250,10 +256,10 @@ Suppose you are investigating the effect of drug "A" vs. placebo on the occurren
 
 Then the probabilities above can be thought of as:
 
-1. p0 Prob(Y=1|X=0): The probability of observing an improvement in patients who did not receive the medication (placebo group).
-2. p1 Prob(Y=1|X=1): The probability of observing an improvement in patients who received the medication.
+1. p0 = Prob(Y=1|X=0): The probability of observing an improvement in patients who did not receive the medication (placebo group).
+2. p1 = Prob(Y=1|X=1): The probability of observing an improvement in patients who received the medication.
 
-In planning the study, you might want to determine the necessary sample size to achieve a desired power for detecting a significant effect of a medication. You would use estimates for p0 and p1 based on previous research or preliminary data. For example, if preliminary studies suggest that 30% of patients improve with no medication (p0 = 0.30) and 50% improve with the medication (p1 = 0.50), you could use wp.logistic to calculate the required sample size to detect this difference with a certain power and at a 0.05 significance level.
+In planning the study, you might want to determine the necessary sample size to achieve a desired power for detecting a certain effect size of a medication's influence. You would use estimates for p0 and p1 based on previous research or preliminary data. For example, if preliminary studies suggest that 30% of patients improve with no medication (p0 = 0.30) and 50% improve with the medication (p1 = 0.50), you could use wp.logistic to calculate the required sample size to detect this difference with a certain power and at a 0.05 significance level.
 ```{r, echo=TRUE, results='markup'}
 # example:  n=Unknown observations, p0=0.3 p1=0.5, sig.level=.05, power=0.80
 wp.logistic(n = NULL, 
